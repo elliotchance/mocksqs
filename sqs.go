@@ -3,12 +3,19 @@ package mocksqs
 import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/sqs"
+	"math/rand"
 	"sync"
+	"time"
 )
 
 type SQS struct {
 	sync.RWMutex
 	queues sync.Map // map[string]*Queue
+
+	// SimulateHTTPLatency when enabled will add a sleep between 20 and 100
+	// milliseconds to each call that would otherwise need to make a HTTP
+	// request with a real SQS client.
+	SimulateHTTPLatency bool
 }
 
 // New creates a new SQS service that contains no queues.
@@ -46,4 +53,11 @@ func (client *SQS) GetQueue(queueURL string) *Queue {
 	}
 
 	return queue.(*Queue)
+}
+
+func (client *SQS) httpRequest() {
+	if client.SimulateHTTPLatency {
+		ms := 10 + rand.Int() % 90
+		time.Sleep(time.Duration(ms) * time.Millisecond)
+	}
 }

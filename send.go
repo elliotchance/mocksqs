@@ -32,6 +32,8 @@ import (
 // - SendMessageOutput.SequenceNumber
 //
 func (client *SQS) SendMessage(input *sqs.SendMessageInput) (*sqs.SendMessageOutput, error) {
+	client.httpRequest()
+
 	client.Lock()
 	defer client.Unlock()
 

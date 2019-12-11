@@ -22,6 +22,8 @@ func (client *SQS) changeMessageVisibility(input *sqs.ChangeMessageVisibilityInp
 }
 
 func (client *SQS) ChangeMessageVisibility(input *sqs.ChangeMessageVisibilityInput) (*sqs.ChangeMessageVisibilityOutput, error) {
+	client.httpRequest()
+
 	client.Lock()
 	defer client.Unlock()
 
