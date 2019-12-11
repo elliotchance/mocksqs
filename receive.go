@@ -21,6 +21,8 @@ import (
 // - ReceiveMessageInput.WaitTimeSeconds
 //
 func (client *SQS) ReceiveMessage(input *sqs.ReceiveMessageInput) (*sqs.ReceiveMessageOutput, error) {
+	client.httpRequest()
+
 	client.Lock()
 	defer client.Unlock()
 

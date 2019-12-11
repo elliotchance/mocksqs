@@ -41,3 +41,13 @@ client.GetQueue(url).OnEmptyQueue = func() {
 See the
 [documentation for Queue](https://godoc.org/github.com/elliotchance/mocksqs#Queue)
 for more information.
+
+# Simulating HTTP Latency
+
+SimulateHTTPLatency when enabled will add a sleep between 20 and 100
+milliseconds to each call that would otherwise need to make a HTTP request with
+a real SQS client:
+
+```go
+client.SimulateHTTPLatency = true
+```

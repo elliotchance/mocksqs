@@ -8,6 +8,8 @@ import (
 
 // DeleteMessage is fully supported.
 func (client *SQS) DeleteMessage(input *sqs.DeleteMessageInput) (*sqs.DeleteMessageOutput, error) {
+	client.httpRequest()
+
 	client.Lock()
 	defer client.Unlock()
 
@@ -37,6 +39,8 @@ func (client *SQS) deleteMessage(input *sqs.DeleteMessageInput) (*sqs.DeleteMess
 
 // DeleteMessageBatch is fully supported.
 func (client *SQS) DeleteMessageBatch(input *sqs.DeleteMessageBatchInput) (*sqs.DeleteMessageBatchOutput, error) {
+	client.httpRequest()
+
 	client.Lock()
 	defer client.Unlock()
 
