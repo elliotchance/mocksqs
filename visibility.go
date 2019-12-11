@@ -9,8 +9,8 @@ import (
 )
 
 func (client *SQS) changeMessageVisibility(input *sqs.ChangeMessageVisibilityInput) (*sqs.ChangeMessageVisibilityOutput, error) {
-	if queue, ok := client.queues[*input.QueueUrl]; ok {
-		if message, ok := queue.Get(*input.ReceiptHandle); ok {
+	if queue := client.GetQueue(*input.QueueUrl); queue != nil {
+		if message, ok := queue.messages.Get(*input.ReceiptHandle); ok {
 			message.(*Message).VisibleAfter = time.Now().Add(
 				time.Duration(*input.VisibilityTimeout) * time.Second)
 		}

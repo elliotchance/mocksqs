@@ -3,26 +3,18 @@ package mocksqs
 import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/sqs"
-	"github.com/elliotchance/orderedmap"
 	"sync"
-	"time"
 )
-
-type Message struct {
-	sqs.Message
-	VisibleAfter time.Time
-	ReceiveCount int64
-}
 
 type SQS struct {
 	sync.RWMutex
-	queues map[string]*orderedmap.OrderedMap
+	queues sync.Map // map[string]*Queue
 }
 
 // New creates a new SQS service that contains no queues.
 func New() *SQS {
 	return &SQS{
-		queues: make(map[string]*orderedmap.OrderedMap),
+		queues: sync.Map{},
 	}
 }
 
@@ -34,7 +26,7 @@ func NewWithQueues(queues map[string][]string) *SQS {
 	client := New()
 
 	for queueURL, messages := range queues {
-		client.queues[queueURL] = orderedmap.NewOrderedMap()
+		client.queues.Store(queueURL, newQueue())
 
 		for _, body := range messages {
 			_, _ = client.SendMessage(&sqs.SendMessageInput{
@@ -45,4 +37,13 @@ func NewWithQueues(queues map[string][]string) *SQS {
 	}
 
 	return client
+}
+
+func (client *SQS) GetQueue(queueURL string) *Queue {
+	queue, ok := client.queues.Load(queueURL)
+	if !ok {
+		return nil
+	}
+
+	return queue.(*Queue)
 }

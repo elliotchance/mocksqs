@@ -57,9 +57,9 @@ func (client *SQS) sendMessage(input *sqs.SendMessageInput) (*sqs.SendMessageOut
 				*input.DelaySeconds))
 	}
 
-	if queue, ok := client.queues[*input.QueueUrl]; ok {
+	if queue := client.GetQueue(*input.QueueUrl); queue != nil {
 		receiptHandle := uuid.New().String()
-		queue.Set(receiptHandle, &Message{
+		queue.messages.Set(receiptHandle, &Message{
 			Message: sqs.Message{
 				Body:          input.MessageBody,
 				ReceiptHandle: aws.String(receiptHandle),

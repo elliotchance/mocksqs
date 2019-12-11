@@ -28,10 +28,10 @@ func (client *SQS) ReceiveMessage(input *sqs.ReceiveMessageInput) (*sqs.ReceiveM
 		return nil, errorMissingField("ReceiveMessageInput.QueueUrl")
 	}
 
-	if queue, ok := client.queues[*input.QueueUrl]; ok {
+	if queue := client.GetQueue(*input.QueueUrl); queue != nil {
 		output := &sqs.ReceiveMessageOutput{}
 
-		for el := queue.Front(); el != nil; el = el.Next() {
+		for el := queue.messages.Front(); el != nil; el = el.Next() {
 			message := el.Value.(*Message)
 			if time.Now().After(message.VisibleAfter) {
 				_, _ = client.changeMessageVisibility(&sqs.ChangeMessageVisibilityInput{
