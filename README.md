@@ -26,3 +26,18 @@ will panic.
 
 You can view the specific implementation details in the
 [godoc documentation](https://godoc.org/github.com/elliotchance/mocksqs).
+
+# Events
+
+Functions can be set on queues to help with unit testing life cycle. For
+example:
+
+```go
+client.GetQueue(url).OnEmptyQueue = func() {
+	// Clean up, assert, cancel context, etc.
+}
+```
+
+See the
+[documentation for Queue](https://godoc.org/github.com/elliotchance/mocksqs#Queue)
+for more information.

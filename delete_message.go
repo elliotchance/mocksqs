@@ -23,8 +23,8 @@ func (client *SQS) deleteMessage(input *sqs.DeleteMessageInput) (*sqs.DeleteMess
 		return nil, err
 	}
 
-	if queue, ok := client.queues[*input.QueueUrl]; ok {
-		didDelete := queue.Delete(*input.ReceiptHandle)
+	if queue := client.GetQueue(*input.QueueUrl); queue != nil {
+		didDelete := queue.delete(*input.ReceiptHandle)
 		if !didDelete {
 			return nil, errorInternal()
 		}

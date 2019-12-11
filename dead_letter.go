@@ -20,4 +20,3 @@ func (client *SQS) ListDeadLetterSourceQueuesWithContext(aws.Context, *sqs.ListD
 func (client *SQS) ListDeadLetterSourceQueuesRequest(*sqs.ListDeadLetterSourceQueuesInput) (*request.Request, *sqs.ListDeadLetterSourceQueuesOutput) {
 	panic("ListDeadLetterSourceQueuesRequest is not implemented")
 }
-
