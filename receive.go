@@ -35,7 +35,8 @@ func (client *SQS) ReceiveMessage(input *sqs.ReceiveMessageInput) (*sqs.ReceiveM
 
 		for el := queue.messages.Front(); el != nil; el = el.Next() {
 			message := el.Value.(*Message)
-			if time.Now().After(message.VisibleAfter) {
+			t := time.Now()
+			if t.After(message.VisibleAfter) || t == message.VisibleAfter {
 				_, _ = client.changeMessageVisibility(&sqs.ChangeMessageVisibilityInput{
 					QueueUrl:          input.QueueUrl,
 					ReceiptHandle:     message.ReceiptHandle,
