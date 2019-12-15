@@ -11,9 +11,11 @@ env:
     # AWS_SECRET_ACCESS_KEY
     - secure: "CeBKHJNlwzVNRBHdQfbQ3e4f40id1HfA2Hzn5o8up8Zjls9XCl5t/cGbIJCpJoUuZhkIzZapQAiYp0vXAzlA2AngMYjyDaGq5eMAMdVZwCL/jPMGPZNPmO82L8Tz+X/e2q8rlsOmQR8gqvqU4px1IU58NfiPkoN9Es4R3tTkGIZSI9swxCb/BgJe3d6H7buWqDIQsa2ma2m8HyB0f6x3qk+9o5U5y1iQrrTL8ZqzOaMZSFkNBRcfjBkMG7eH8fzG0sWmAOREFbHId7nRxM3uJ6lwM0XJNE7OLANz64iRlEvwamyWaERyASRysB48nOkC9iPeNUvYSapvkUMihiueoUSnBXnhEFXFQlAUNKR9Iaqx/Pr2kzfkV0532f9NmP8DPd0Be7EpVpd0frX1EEGnH++0gH4VxfnF8OKMXr7OQV75RPVF+mFn4mPhhMzORPuQQksLbNEiyj5xbS4nqo7CWRFxW0jcLqHdmrg6kMPupJQkQlaSz808SY+y0/VL+b0htztCQx7MniiBVo3JcUQF5Y7yqRSNvO4oQzwL856/rPAYv3uAbU5DKGI+g5+cXnVbUkEZRmPiXbPYz/mcvWWGHckRlUgBWfrGrYWxnmJYxODHS7Q9uYKfLnP7WaYd9vdWHFMWlkWKCQcnQIMgLyj4c7MGKo+3vQR8L7H/shcLtns="
 
-    - QUEUE_URL="https://sqs.us-east-1.amazonaws.com/281910179584/mocksqs"
     - AWS_REGION="us-east-1"
 
 script:
-  - go test
-  - INTEGRATION=1 go test
+  - go test -race -coverprofile=coverage.txt -covermode=atomic
+  - INTEGRATION=1 go test -race
+
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
