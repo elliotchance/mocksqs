@@ -5,6 +5,7 @@ import (
 	"github.com/aws/aws-sdk-go/service/sqs"
 	"github.com/aws/aws-sdk-go/service/sqs/sqsiface"
 	"github.com/elliotchance/mocksqs"
+	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"os"
@@ -12,6 +13,13 @@ import (
 )
 
 const uuidRegexp = `[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}`
+
+type clientDetails struct {
+	client    sqsiface.SQSAPI
+	queueURL  string
+	queueName string
+	cleanup   func()
+}
 
 func assertRegexpError(t *testing.T, err error, regexp string) {
 	require.Error(t, err)
@@ -28,27 +36,54 @@ func assertAWSString(t *testing.T, expected, actual *string) {
 	assert.Equal(t, *expected, *actual)
 }
 
-func getRealSQSClient() (sqsiface.SQSAPI, string) {
+func getRealSQSClient() *clientDetails {
 	sess := session.Must(session.NewSessionWithOptions(session.Options{
 		SharedConfigState: session.SharedConfigEnable,
 	}))
 
-	return sqs.New(sess), os.Getenv("QUEUE_URL")
+	return &clientDetails{
+		client:  sqs.New(sess),
+		cleanup: func() {},
+	}
 }
 
-func getMockSQSClient() (sqsiface.SQSAPI, string) {
-	url := "https://sqs.us-east-1.amazonaws.com/281910179584/mocksqs"
-	client := mocksqs.NewWithQueues(map[string][]string{
-		url: {"foo"},
-	})
+func getMockSQSClient() *clientDetails {
+	client := mocksqs.New()
 
-	return client, url
+	return &clientDetails{
+		client:  client,
+		cleanup: func() {},
+	}
 }
 
-func getSQSClient() (sqsiface.SQSAPI, string) {
+func getSQSClient() *clientDetails {
 	if os.Getenv("INTEGRATION") != "" {
 		return getRealSQSClient()
 	}
 
 	return getMockSQSClient()
+}
+
+func getSQSClientWithQueue() *clientDetails {
+	client := getSQSClient()
+	client.queueName = uuid.New().String()
+
+	result, err := client.client.CreateQueue(&sqs.CreateQueueInput{
+		QueueName: &client.queueName,
+	})
+	if err != nil {
+		panic(err)
+	}
+	client.queueURL = *result.QueueUrl
+
+	client.cleanup = func() {
+		_, err := client.client.DeleteQueue(&sqs.DeleteQueueInput{
+			QueueUrl: &client.queueURL,
+		})
+		if err != nil {
+			panic(err)
+		}
+	}
+
+	return client
 }

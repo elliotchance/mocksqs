@@ -15,10 +15,11 @@ func assertSendMessageOutput(t *testing.T, expected, actual *sqs.SendMessageOutp
 }
 
 func TestSQS_SendMessage(t *testing.T) {
-	client, url := getSQSClient()
-
 	t.Run("MissingQueueURL", func(t *testing.T) {
-		result, err := client.SendMessage(&sqs.SendMessageInput{
+		client := getSQSClient()
+		defer client.cleanup()
+
+		result, err := client.client.SendMessage(&sqs.SendMessageInput{
 			MessageBody: aws.String("a"),
 		})
 		assert.EqualError(t, err, "InvalidParameter: 1 validation error(s) found.\n- missing required field, SendMessageInput.QueueUrl.\n")
@@ -26,16 +27,22 @@ func TestSQS_SendMessage(t *testing.T) {
 	})
 
 	t.Run("MissingMessageBody", func(t *testing.T) {
-		result, err := client.SendMessage(&sqs.SendMessageInput{
-			QueueUrl: &url,
+		client := getSQSClientWithQueue()
+		defer client.cleanup()
+
+		result, err := client.client.SendMessage(&sqs.SendMessageInput{
+			QueueUrl: &client.queueURL,
 		})
 		assert.EqualError(t, err, "InvalidParameter: 1 validation error(s) found.\n- missing required field, SendMessageInput.MessageBody.\n")
 		assertSendMessageOutput(t, &sqs.SendMessageOutput{}, result)
 	})
 
 	t.Run("EmptyMessageBody", func(t *testing.T) {
-		result, err := client.SendMessage(&sqs.SendMessageInput{
-			QueueUrl:    &url,
+		client := getSQSClientWithQueue()
+		defer client.cleanup()
+
+		result, err := client.client.SendMessage(&sqs.SendMessageInput{
+			QueueUrl:    &client.queueURL,
 			MessageBody: aws.String(""),
 		})
 		assertRegexpError(t, err, `MissingParameter: The request must contain the parameter MessageBody.\s+status code: 400, request id: `+uuidRegexp+"$")
@@ -43,8 +50,11 @@ func TestSQS_SendMessage(t *testing.T) {
 	})
 
 	t.Run("NegativeDelaySeconds", func(t *testing.T) {
-		result, err := client.SendMessage(&sqs.SendMessageInput{
-			QueueUrl:     &url,
+		client := getSQSClientWithQueue()
+		defer client.cleanup()
+
+		result, err := client.client.SendMessage(&sqs.SendMessageInput{
+			QueueUrl:     &client.queueURL,
 			MessageBody:  aws.String("a"),
 			DelaySeconds: aws.Int64(-1),
 		})
@@ -53,8 +63,11 @@ func TestSQS_SendMessage(t *testing.T) {
 	})
 
 	t.Run("DelaySecondsTooLarge", func(t *testing.T) {
-		result, err := client.SendMessage(&sqs.SendMessageInput{
-			QueueUrl:     &url,
+		client := getSQSClientWithQueue()
+		defer client.cleanup()
+
+		result, err := client.client.SendMessage(&sqs.SendMessageInput{
+			QueueUrl:     &client.queueURL,
 			MessageBody:  aws.String("a"),
 			DelaySeconds: aws.Int64(901),
 		})
@@ -63,8 +76,11 @@ func TestSQS_SendMessage(t *testing.T) {
 	})
 
 	t.Run("MinimalSuccess", func(t *testing.T) {
-		result, err := client.SendMessage(&sqs.SendMessageInput{
-			QueueUrl:    &url,
+		client := getSQSClientWithQueue()
+		defer client.cleanup()
+
+		result, err := client.client.SendMessage(&sqs.SendMessageInput{
+			QueueUrl:    &client.queueURL,
 			MessageBody: aws.String("a"),
 		})
 		require.NoError(t, err)
@@ -75,8 +91,11 @@ func TestSQS_SendMessage(t *testing.T) {
 	})
 
 	t.Run("QueueDoesNotExist", func(t *testing.T) {
-		result, err := client.SendMessage(&sqs.SendMessageInput{
-			QueueUrl:    aws.String(url + "FOO"),
+		client := getSQSClientWithQueue()
+		defer client.cleanup()
+
+		result, err := client.client.SendMessage(&sqs.SendMessageInput{
+			QueueUrl:    aws.String(client.queueURL + "FOO"),
 			MessageBody: aws.String("a"),
 		})
 		assertRegexpError(t, err, "AWS.SimpleQueueService.NonExistentQueue: The specified queue does not exist for this wsdl version.\n\tstatus code: 400, request id: "+uuidRegexp+"$")

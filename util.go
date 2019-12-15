@@ -1,6 +1,7 @@
 package mocksqs
 
 import (
+	"fmt"
 	"github.com/google/uuid"
 	"reflect"
 )
@@ -17,4 +18,10 @@ func checkRequiredFields(fields map[string]interface{}) error {
 	}
 
 	return nil
+}
+
+// CreateQueueURL will generate a valid SQS queue URL with the provided queue
+// name.
+func CreateQueueURL(name string) string {
+	return fmt.Sprintf("https://sqs.us-east-1.amazonaws.com/281910179584/%s", name)
 }
