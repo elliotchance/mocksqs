@@ -6,9 +6,26 @@ import (
 	"github.com/aws/aws-sdk-go/service/sqs"
 )
 
-// DeleteQueue is not implemented. It will panic in all cases.
-func (client *SQS) DeleteQueue(*sqs.DeleteQueueInput) (*sqs.DeleteQueueOutput, error) {
-	panic("DeleteQueue is not implemented")
+// DeleteQueue is fully supported.
+func (client *SQS) DeleteQueue(input *sqs.DeleteQueueInput) (*sqs.DeleteQueueOutput, error) {
+	client.httpRequest()
+
+	client.Lock()
+	defer client.Unlock()
+
+	if input.QueueUrl == nil {
+		return &sqs.DeleteQueueOutput{},
+			errorMissingField("DeleteQueueInput.QueueUrl")
+	}
+
+	if queue := client.GetQueue(*input.QueueUrl); queue != nil {
+		client.queues.Delete(*input.QueueUrl)
+
+		return &sqs.DeleteQueueOutput{}, nil
+	}
+
+	return &sqs.DeleteQueueOutput{},
+		errorWithRequestID("AWS.SimpleQueueService.NonExistentQueue: The specified queue does not exist for this wsdl version.")
 }
 
 // DeleteQueueWithContext is not implemented. It will panic in all cases.
