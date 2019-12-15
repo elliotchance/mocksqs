@@ -26,6 +26,18 @@ func assertRegexpError(t *testing.T, err error, regexp string) {
 	assert.Regexp(t, regexp, err.Error())
 }
 
+func dereferenceAWSStrings(ss1 []*string) (ss2 []string) {
+	for _, ss := range ss1 {
+		ss2 = append(ss2, *ss)
+	}
+
+	return
+}
+
+func assertContainsAWSString(t *testing.T, expected string, actual []*string) {
+	assert.Contains(t, dereferenceAWSStrings(actual), expected)
+}
+
 func assertAWSString(t *testing.T, expected, actual *string) {
 	if expected == nil {
 		assert.Nil(t, actual)

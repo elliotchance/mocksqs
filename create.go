@@ -30,7 +30,7 @@ func (client *SQS) CreateQueue(input *sqs.CreateQueueInput) (*sqs.CreateQueueOut
 	queueURL := CreateQueueURL(*input.QueueName)
 
 	if client.GetQueue(queueURL) == nil {
-		client.queues.Store(queueURL, newQueue())
+		client.queues.Store(queueURL, newQueue(queueURL))
 	}
 
 	return &sqs.CreateQueueOutput{

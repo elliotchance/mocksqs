@@ -4,11 +4,29 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/request"
 	"github.com/aws/aws-sdk-go/service/sqs"
+	"strings"
 )
 
-// ListQueues is not implemented. It will panic in all cases.
-func (client *SQS) ListQueues(*sqs.ListQueuesInput) (*sqs.ListQueuesOutput, error) {
-	panic("ListQueues is not implemented")
+// ListQueues is fully supported.
+func (client *SQS) ListQueues(input *sqs.ListQueuesInput) (*sqs.ListQueuesOutput, error) {
+	client.httpRequest()
+
+	prefix := ""
+	if input.QueueNamePrefix != nil {
+		prefix = *input.QueueNamePrefix
+	}
+
+	output := &sqs.ListQueuesOutput{}
+
+	client.queues.Range(func(key, value interface{}) bool {
+		if strings.HasPrefix(key.(string), prefix) {
+			output.QueueUrls = append(output.QueueUrls, &value.(*Queue).URL)
+		}
+
+		return true
+	})
+
+	return output, nil
 }
 
 // ListQueuesWithContext is not implemented. It will panic in all cases.
