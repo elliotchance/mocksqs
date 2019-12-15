@@ -7,15 +7,18 @@ import (
 type Queue struct {
 	messages *orderedmap.OrderedMap
 
+	URL string
+
 	// OnEmptyQueue is triggered after the last message is deleted from the
 	// queue. If a queue becomes empty multiple times then this is triggered
 	// each time.
 	OnEmptyQueue func()
 }
 
-func newQueue() *Queue {
+func newQueue(url string) *Queue {
 	return &Queue{
 		messages: orderedmap.NewOrderedMap(),
+		URL:      url,
 	}
 }
 

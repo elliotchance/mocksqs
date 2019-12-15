@@ -51,7 +51,7 @@ func TestSQS_CreateQueue(t *testing.T) {
 			assert.NoError(t, err)
 		}()
 
-		assert.Contains(t, *result.QueueUrl, "/" + queueName)
+		assert.Contains(t, *result.QueueUrl, "/"+queueName)
 	})
 }
 

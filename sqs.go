@@ -33,7 +33,7 @@ func NewWithQueues(queues map[string][]string) *SQS {
 	client := New()
 
 	for queueURL, messages := range queues {
-		client.queues.Store(queueURL, newQueue())
+		client.queues.Store(queueURL, newQueue(queueURL))
 
 		for _, body := range messages {
 			_, _ = client.SendMessage(&sqs.SendMessageInput{
@@ -57,7 +57,7 @@ func (client *SQS) GetQueue(queueURL string) *Queue {
 
 func (client *SQS) httpRequest() {
 	if client.SimulateHTTPLatency {
-		ms := 10 + rand.Int() % 90
+		ms := 20 + rand.Int()%80
 		time.Sleep(time.Duration(ms) * time.Millisecond)
 	}
 }
