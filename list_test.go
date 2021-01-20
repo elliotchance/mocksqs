@@ -41,3 +41,15 @@ func TestSQS_ListQueuesRequest(t *testing.T) {
 		mocksqs.New().ListQueuesRequest(nil)
 	})
 }
+
+func TestSQS_ListQueuesPages(t *testing.T) {
+	assert.PanicsWithValue(t, "ListQueuesPages is not implemented", func() {
+		mocksqs.New().ListQueuesPages(nil, nil)
+	})
+}
+
+func TestSQS_ListQueuesPagesWithContext(t *testing.T) {
+	assert.PanicsWithValue(t, "ListQueuesPagesWithContext is not implemented", func() {
+		mocksqs.New().ListQueuesPagesWithContext(nil, nil, nil)
+	})
+}
