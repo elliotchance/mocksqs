@@ -20,3 +20,13 @@ func (client *SQS) ListDeadLetterSourceQueuesWithContext(aws.Context, *sqs.ListD
 func (client *SQS) ListDeadLetterSourceQueuesRequest(*sqs.ListDeadLetterSourceQueuesInput) (*request.Request, *sqs.ListDeadLetterSourceQueuesOutput) {
 	panic("ListDeadLetterSourceQueuesRequest is not implemented")
 }
+
+// ListDeadLetterSourceQueuesPages is not implemented. It will panic in all cases.
+func (client *SQS) ListDeadLetterSourceQueuesPages(*sqs.ListDeadLetterSourceQueuesInput, func(*sqs.ListDeadLetterSourceQueuesOutput, bool) bool) error {
+	panic("ListDeadLetterSourceQueuesPages is not implemented")
+}
+
+// ListDeadLetterSourceQueuesPagesWithContext is not implemented. It will panic in all cases.
+func (client *SQS) ListDeadLetterSourceQueuesPagesWithContext(aws.Context, *sqs.ListDeadLetterSourceQueuesInput, func(*sqs.ListDeadLetterSourceQueuesOutput, bool) bool, ...request.Option) error {
+	panic("ListDeadLetterSourceQueuesPagesWithContext is not implemented")
+}
