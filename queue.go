@@ -31,3 +31,17 @@ func (queue *Queue) delete(receiptHandle string) (didDelete bool) {
 
 	return
 }
+
+func (queue *Queue) Messages() (*orderedmap.OrderedMap, bool) {
+	m := queue.messages
+
+	rv := orderedmap.NewOrderedMap()
+	for _, key := range m.Keys() {
+		v, ok := m.Get(key)
+		if !ok {
+			return nil, false
+		}
+		rv.Set(key, v)
+	}
+	return rv, true
+}
