@@ -23,3 +23,15 @@ func TestSQS_ListDeadLetterSourceQueuesRequest(t *testing.T) {
 		mocksqs.New().ListDeadLetterSourceQueuesRequest(nil)
 	})
 }
+
+func TestSQS_ListDeadLetterSourceQueuesPages(t *testing.T) {
+	assert.PanicsWithValue(t, "ListDeadLetterSourceQueuesPages is not implemented", func() {
+		mocksqs.New().ListDeadLetterSourceQueuesPages(nil, nil)
+	})
+}
+
+func TestSQS_ListDeadLetterSourceQueuesPagesWithContext(t *testing.T) {
+	assert.PanicsWithValue(t, "ListDeadLetterSourceQueuesPagesWithContext is not implemented", func() {
+		mocksqs.New().ListDeadLetterSourceQueuesPagesWithContext(nil, nil, nil)
+	})
+}
