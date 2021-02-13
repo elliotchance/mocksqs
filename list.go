@@ -38,3 +38,13 @@ func (client *SQS) ListQueuesWithContext(aws.Context, *sqs.ListQueuesInput, ...r
 func (client *SQS) ListQueuesRequest(*sqs.ListQueuesInput) (*request.Request, *sqs.ListQueuesOutput) {
 	panic("ListQueuesRequest is not implemented")
 }
+
+// ListQueuesPages is not implemented. It will panic in all cases.
+func (client *SQS) ListQueuesPages(*sqs.ListQueuesInput, func(*sqs.ListQueuesOutput, bool) bool) error {
+	panic("ListQueuesPages is not implemented")
+}
+
+// ListQueuesPagesWithContext is not implemented. It will panic in all cases.
+func (client *SQS) ListQueuesPagesWithContext(aws.Context, *sqs.ListQueuesInput, func(*sqs.ListQueuesOutput, bool) bool, ...request.Option) error {
+	panic("ListQueuesPagesWithContext is not implemented")
+}
