@@ -2,9 +2,12 @@ package mocksqs
 
 import (
 	"github.com/elliotchance/orderedmap"
+	"sync"
 )
 
 type Queue struct {
+	sync.RWMutex
+
 	messages *orderedmap.OrderedMap
 
 	URL string
@@ -30,4 +33,11 @@ func (queue *Queue) delete(receiptHandle string) (didDelete bool) {
 	}
 
 	return
+}
+
+func (queue *Queue) Messages() *orderedmap.OrderedMap {
+	queue.Lock()
+	defer queue.Unlock()
+
+	return queue.messages.Copy()
 }
