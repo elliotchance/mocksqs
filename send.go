@@ -76,8 +76,13 @@ func (client *SQS) sendMessage(input *sqs.SendMessageInput) (*sqs.SendMessageOut
 }
 
 // SendMessageWithContext is not implemented. It will panic in all cases.
-func (client *SQS) SendMessageWithContext(aws.Context, *sqs.SendMessageInput, ...request.Option) (*sqs.SendMessageOutput, error) {
-	panic("SendMessageWithContext is not implemented")
+func (client *SQS) SendMessageWithContext(ctx aws.Context, input *sqs.SendMessageInput, opts ...request.Option) (*sqs.SendMessageOutput, error) {
+	client.httpRequest()
+
+	client.Lock()
+	defer client.Unlock()
+
+	return client.sendMessage(input)
 }
 
 // SendMessageRequest is not implemented. It will panic in all cases.
