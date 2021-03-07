@@ -75,7 +75,13 @@ func (client *SQS) sendMessage(input *sqs.SendMessageInput) (*sqs.SendMessageOut
 	return &sqs.SendMessageOutput{}, errorNonExistentQueue()
 }
 
-// SendMessageWithContext is not implemented. It will panic in all cases.
+// SendMessageWithContext is partially supported. The following are not supported:
+//
+// - Recording ctx
+//
+// - Recording opts
+//
+// - Also see all features not supported for SendMessage()
 func (client *SQS) SendMessageWithContext(ctx aws.Context, input *sqs.SendMessageInput, opts ...request.Option) (*sqs.SendMessageOutput, error) {
 	client.httpRequest()
 
