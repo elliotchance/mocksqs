@@ -51,3 +51,49 @@ func TestQueue_Delete(t *testing.T) {
 		assert.True(t, didCall)
 	})
 }
+
+func TestQueue_Messages(t *testing.T) {
+	queueURL := "queueURL"
+
+	t.Run("QueueDumpsMessages", func(t *testing.T) {
+		client := mocksqs.NewWithQueues(map[string][]string{
+			queueURL: {},
+		})
+
+		mb := "messageBody"
+
+		_, err := client.SendMessage(&sqs.SendMessageInput{
+			MessageBody:             &mb,
+			QueueUrl:                &queueURL,
+		})
+
+		m := client.GetQueue(queueURL).Messages()
+
+		require.NoError(t, err)
+		assert.Equal(t, 1, m.Len())
+	})
+
+	t.Run("SendingMessageAfterCopyDoesNotChangeCopy", func(t *testing.T) {
+		client := mocksqs.NewWithQueues(map[string][]string{
+			queueURL: {},
+		})
+
+		mb := "messageBody"
+
+		_, err1 := client.SendMessage(&sqs.SendMessageInput{
+			MessageBody:             &mb,
+			QueueUrl:                &queueURL,
+		})
+		require.NoError(t, err1)
+
+		m := client.GetQueue(queueURL).Messages()
+
+		_, err2 := client.SendMessage(&sqs.SendMessageInput{
+			MessageBody:             &mb,
+			QueueUrl:                &queueURL,
+		})
+
+		require.NoError(t, err2)
+		assert.Equal(t, 1, m.Len())
+	})
+}
