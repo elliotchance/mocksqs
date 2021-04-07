@@ -1,6 +1,7 @@
 package mocksqs
 
 import (
+	"context"
 	"fmt"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/request"
@@ -32,12 +33,7 @@ import (
 // - SendMessageOutput.SequenceNumber
 //
 func (client *SQS) SendMessage(input *sqs.SendMessageInput) (*sqs.SendMessageOutput, error) {
-	client.httpRequest()
-
-	client.Lock()
-	defer client.Unlock()
-
-	return client.sendMessage(input)
+	return client.SendMessageWithContext(context.TODO(), input, nil)
 }
 
 func (client *SQS) sendMessage(input *sqs.SendMessageInput) (*sqs.SendMessageOutput, error) {
@@ -75,9 +71,20 @@ func (client *SQS) sendMessage(input *sqs.SendMessageInput) (*sqs.SendMessageOut
 	return &sqs.SendMessageOutput{}, errorNonExistentQueue()
 }
 
-// SendMessageWithContext is not implemented. It will panic in all cases.
-func (client *SQS) SendMessageWithContext(aws.Context, *sqs.SendMessageInput, ...request.Option) (*sqs.SendMessageOutput, error) {
-	panic("SendMessageWithContext is not implemented")
+// SendMessageWithContext is partially supported. The following are not supported:
+//
+// - Recording ctx
+//
+// - Recording opts
+//
+// - Also see all features not supported for SendMessage()
+func (client *SQS) SendMessageWithContext(ctx aws.Context, input *sqs.SendMessageInput, opts ...request.Option) (*sqs.SendMessageOutput, error) {
+	client.httpRequest()
+
+	client.Lock()
+	defer client.Unlock()
+
+	return client.sendMessage(input)
 }
 
 // SendMessageRequest is not implemented. It will panic in all cases.
