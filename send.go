@@ -1,6 +1,7 @@
 package mocksqs
 
 import (
+	"context"
 	"fmt"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/request"
@@ -32,12 +33,7 @@ import (
 // - SendMessageOutput.SequenceNumber
 //
 func (client *SQS) SendMessage(input *sqs.SendMessageInput) (*sqs.SendMessageOutput, error) {
-	client.httpRequest()
-
-	client.Lock()
-	defer client.Unlock()
-
-	return client.sendMessage(input)
+	return client.SendMessageWithContext(context.TODO(), input, nil)
 }
 
 func (client *SQS) sendMessage(input *sqs.SendMessageInput) (*sqs.SendMessageOutput, error) {
